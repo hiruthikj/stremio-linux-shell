@@ -15,6 +15,7 @@ use std::{
     cell::{Cell, RefCell},
     env,
     os::raw::c_void,
+    ptr,
     sync::OnceLock,
 };
 use tracing::error;
@@ -169,6 +170,16 @@ impl ObjectImpl for Video {
                 });
             }
         });
+    }
+
+    fn dispose(&self) {
+        unsafe {
+            libmpv2_sys::mpv_set_wakeup_callback(
+                self.mpv.borrow().ctx.as_ptr(),
+                None,
+                ptr::null_mut(),
+            );
+        }
     }
 }
 
